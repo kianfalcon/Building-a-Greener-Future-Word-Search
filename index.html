@@ -2,101 +2,124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Building a Greener Future: Word Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Building a Greener Future: Word Search 🪑➡️🌿</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
             background: white;
             color: #333;
             font-family: Arial, sans-serif;
+            padding: 16px;
+            overscroll-behavior: none;
         }
+
         .container {
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 24px;
+            padding: 12px;
         }
+
         .header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
         .instructions {
             text-align: center;
             background: #f0f9ff;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #bae6fd;
-        }
-        .logo {
-            max-width: 300px;
-            height: auto;
             margin-bottom: 16px;
+            border: 1px solid #bae6fd;
+            font-size: 0.9rem;
         }
-        .timer {
-            font-size: 1.5rem;
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 12px;
+        }
+
+        .timer, .score {
+            font-size: 1.1rem;
             color: #666;
-            margin: 10px 0;
+            margin: 8px 0;
             text-align: center;
         }
-        .score {
-            font-size: 1.2rem;
-            color: #666;
-        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            gap: 4px;
-            max-width: 500px;
+            gap: 2px;
+            width: 100%;
+            max-width: 400px;
             margin: 0 auto;
             background: #f5f5f5;
-            padding: 16px;
+            padding: 8px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            touch-action: none;
         }
+
         .cell {
-            width: 48px;
-            height: 48px;
+            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             color: #333;
             font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background-color 0.15s;
-            border-radius: 4px;
+            font-size: 1rem;
+            touch-action: none;
             user-select: none;
             border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        .cell:hover {
+
+        .cell:active {
             background: #f0f0f0;
         }
+
         .cell.selected {
             background: #ffebee;
             border-color: #991b1b;
         }
+
         .cell.found {
             background: #e8f5e9;
             border-color: #16a34a;
             color: #16a34a;
         }
+
         .found-words {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 24px;
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
+
+        .found-words h2 {
+            font-size: 1.2rem;
+            margin: 12px 0;
+            text-align: center;
+        }
+
         .found-words-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 8px;
             margin-top: 8px;
         }
+
         .found-word {
             background: #e8f5e9;
             color: #16a34a;
@@ -104,25 +127,9 @@
             border-radius: 4px;
             text-align: center;
             border: 1px solid #16a34a;
+            font-size: 0.9rem;
         }
-        .completion-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            max-width: 500px;
-            width: 90%;
-            z-index: 1000;
-            text-align: center;
-        }
-        .completion-popup.show {
-            display: block;
-        }
+
         .popup {
             display: none;
             position: fixed;
@@ -130,17 +137,28 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 24px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-width: 400px;
             width: 90%;
+            max-width: 320px;
             z-index: 1000;
-            color: #333;
         }
+
         .popup.show {
             display: block;
         }
+
+        .popup h2 {
+            font-size: 1.2rem;
+            margin: 0 0 12px 0;
+        }
+
+        .popup p {
+            font-size: 0.9rem;
+            margin: 8px 0;
+        }
+
         .button {
             background: #16a34a;
             color: white;
@@ -148,17 +166,71 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            float: right;
-            margin-top: 16px;
+            width: 100%;
+            margin-top: 12px;
+            font-size: 1rem;
         }
-        .button:hover {
+
+        .button:active {
             background: #15803d;
         }
-        .achievement {
-            font-size: 1.5rem;
-            color: #16a34a;
+
+        .completion-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 320px;
+            z-index: 1000;
             text-align: center;
+        }
+
+        .completion-popup.show {
+            display: block;
+        }
+
+        .achievement-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .completion-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
             margin-top: 16px;
+        }
+
+        .completion-button {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .sustainability-link {
+            font-size: 0.9rem;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 360px) {
+            .cell {
+                font-size: 0.9rem;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -167,34 +239,37 @@
         <div class="header">
             <svg class="logo" viewBox="0 0 400 100">
                 <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
-                      style="font-size: 48px; font-weight: bold;">
-                    <tspan style="fill: black;">Kian</tspan>
+                      style="font-size: 60px; font-weight: bold;">
+                    <tspan style="fill: black;">KIAN</tspan>
                     <tspan style="fill: #991b1b;">Falcon</tspan>
                 </text>
             </svg>
             <h1>Building a Greener Future: Word Search 🏢➡️🌿</h1>
-            <div class="instructions">
-                🎮 How to play: Click and drag your mouse over letters to find hidden words!
-                Words can be horizontal, vertical, or diagonal in any direction.
+            <div class="sustainability-link">
+                <p>To learn about our commitment to sustainability, visit  
+                    <a href="https://www.kian.com/sustainable-solutions" target="_blank">Kian Falcon Sustainability Solutions</a>
+                </p>
             </div>
-            <p class="timer">Time: <span id="timer">00:00</span></p>
-            <p class="score">Score: <span id="score">0</span></p>
-            <p class="achievement" id="achievement"></p>
         </div>
+        <div class="instructions">
+            🎮 Touch and drag to find hidden words! Words can be horizontal, vertical, or diagonal in any direction.
+        </div>
+        <p class="timer">Time: <span id="timer">00:00</span></p>
+        <p class="score">Score: <span id="score">0</span></p>
 
         <div class="grid" id="grid"></div>
-            <h2>Found Words (<span id="found-count">0</span>)</h2>
+
+        <div class="found-words">
+            <h2>Found Words (<span id="found-count">0</span>/7)</h2>
             <div class="found-words-grid" id="found-words-list"></div>
         </div>
 
         <div class="popup" id="popup">
-            <div class="popup-content">
-                <h2 id="popup-word"></h2>
-                <p><strong>Definition:</strong> <span id="popup-definition"></span></p>
-                <p><strong>Sustainability Impact:</strong> <span id="popup-impact"></span></p>
-                <p><strong>Industry Relevance:</strong> <span id="popup-industry"></span></p>
-                <button class="button" onclick="closePopup()">Done</button>
-            </div>
+            <h2 id="popup-word"></h2>
+            <p><strong>Definition:</strong> <span id="popup-definition"></span></p>
+            <p><strong>Sustainability Impact:</strong> <span id="popup-impact"></span></p>
+            <p><strong>Industry Relevance:</strong> <span id="popup-industry"></span></p>
+            <button class="button" onclick="closePopup()">Done</button>
         </div>
 
         <div class="completion-popup" id="completion-popup">
@@ -249,10 +324,10 @@
         };
 
         const ACHIEVEMENT_LEVELS = [
-            { time: 60, title: "🏆 Eco Champion", message: "Lightning-fast sustainability expert!" },
-            { time: 120, title: "🌟 Green Guardian", message: "Great environmental awareness!" },
-            { time: 180, title: "🌱 Earth Defender", message: "Solid eco-warrior performance!" },
-            { time: 240, title: "🌍 Nature Novice", message: "Good start on your green journey!" }
+            { time: 45, title: "🏆 Eco Champion", message: "Lightning-fast sustainability expert!" },
+            { time: 80, title: "🌟 Green Guardian", message: "Great environmental awareness!" },
+            { time: 140, title: "🌱 Earth Defender", message: "Solid eco-warrior performance!" },
+            { time: 180, title: "🌍 Nature Novice", message: "Good start on your green journey!" }
         ];
 
         const ECO_FACTS = {
@@ -282,6 +357,7 @@
         let timerStarted = false;
         let startTime;
         let timerInterval;
+        let lastTouchedCell = null;
 
         function getAchievement(seconds) {
             for (const level of ACHIEVEMENT_LEVELS) {
@@ -345,6 +421,24 @@
                     cell.dataset.row = i;
                     cell.dataset.col = j;
                     
+                    // Add touch event listeners
+                    cell.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        startTimer();
+                        handleTouchStart(i, j);
+                    }, { passive: false });
+                    
+                    cell.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        handleTouchMove(e);
+                    }, { passive: false });
+                    
+                    cell.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        handleTouchEnd();
+                    }, { passive: false });
+                    
+                    // Keep mouse events for desktop compatibility
                     cell.addEventListener('mousedown', () => {
                         startTimer();
                         handleMouseDown(i, j);
@@ -357,6 +451,37 @@
             }
             
             document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('touchend', handleTouchEnd);
+        }
+
+        function handleTouchStart(row, col) {
+            selecting = true;
+            selectedCells.clear();
+            currentSelection = [];
+            lastTouchedCell = { row, col };
+            addToSelection(row, col);
+        }
+
+        function handleTouchMove(e) {
+            if (!selecting) return;
+            
+            const touch = e.touches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (element && element.classList.contains('cell')) {
+                const row = parseInt(element.dataset.row);
+                const col = parseInt(element.dataset.col);
+                
+                if (lastTouchedCell && (lastTouchedCell.row !== row || lastTouchedCell.col !== col)) {
+                    lastTouchedCell = { row, col };
+                    addToSelection(row, col);
+                }
+            }
+        }
+
+        function handleTouchEnd() {
+            handleMouseUp();
+            lastTouchedCell = null;
         }
 
         function handleMouseDown(row, col) {
@@ -373,7 +498,7 @@
         }
 
         function addToSelection(row, col) {
-            const cellKey =  `${row}-${col}`;
+            const cellKey = `${row}-${col}`;
             if (!selectedCells.has(cellKey)) {
                 selectedCells.add(cellKey);
                 currentSelection.push({ row, col });
@@ -398,6 +523,7 @@
                     markFoundWord();
                     showPopup(wordToAdd);
                     updateScore(wordToAdd.length);
+                    checkGameCompletion();
                 }
             }
             selecting = false;
@@ -458,41 +584,30 @@
             document.getElementById('popup').classList.remove('show');
         }
 
-        // Initialize the game
         function checkGameCompletion() {
-    if (foundWords.size === Object.keys(WORD_DICTIONARY).length) {
-        clearInterval(timerInterval); // Stop the timer
-        showCompletionPopup(); // Show completion message
-    }
-}
-
-// Modify handleMouseUp function to include checkGameCompletion()
-function handleMouseUp() {
-    if (selecting) {
-        const selectedWord = currentSelection
-            .map(pos => gridWords[pos.row][pos.col])
-            .join('')
-            .toLowerCase();
-        
-        const reversedWord = selectedWord.split('').reverse().join('');
-        
-        if ((WORD_DICTIONARY[selectedWord] || WORD_DICTIONARY[reversedWord]) && 
-            !foundWords.has(selectedWord) && !foundWords.has(reversedWord)) {
-            const wordToAdd = WORD_DICTIONARY[selectedWord] ? selectedWord : reversedWord;
-            foundWords.add(wordToAdd);
-            updateFoundWords();
-            markFoundWord();
-            showPopup(wordToAdd);
-            updateScore(wordToAdd.length);
-            checkGameCompletion(); // Check if game is complete
+            if (foundWords.size === Object.keys(WORD_DICTIONARY).length) {
+                clearInterval(timerInterval);
+                showCompletionPopup();
+            }
         }
-    }
-    selecting = false;
-    selectedCells.clear();
-    currentSelection = [];
-    updateSelectedCells();
-}
-initializeGrid();
+
+        // Initialize the game
+        initializeGrid();
+
+        // Prevent default touch behavior to avoid scrolling while playing
+        document.addEventListener('touchmove', (e) => {
+            if (selecting) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Clean up when the window loses focus
+        window.addEventListener('blur', () => {
+            selecting = false;
+            selectedCells.clear();
+            currentSelection = [];
+            updateSelectedCells();
+        });
     </script>
 </body>
 </html>
