@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Greener Future: Word Search 🏢➡️🌿</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: white;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .instructions {
+            text-align: center;
+            background: #f0f9ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #bae6fd;
+        }
+        .logo {
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 16px;
+        }
+        .timer {
+            font-size: 1.5rem;
+            color: #666;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .score {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cell {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            border-radius: 4px;
+            user-select: none;
+            border: 1px solid #ddd;
+        }
+        .cell:hover {
+            background: #f0f0f0;
+        }
+        .cell.selected {
+            background: #ffebee;
+            border-color: #991b1b;
+        }
+        .cell.found {
+            background: #e8f5e9;
+            border-color: #16a34a;
+            color: #16a34a;
+        }
+        .found-words {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .found-words-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .found-word {
+            background: #e8f5e9;
+            color: #16a34a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #16a34a;
+        }
+        .completion-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+            z-index: 1000;
+            text-align: center;
+        }
+        .completion-popup.show {
+            display: block;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 400px;
+            width: 90%;
+            z-index: 1000;
+            color: #333;
+        }
+        .popup.show {
+            display: block;
+        }
+        .button {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            margin-top: 16px;
+        }
+        .button:hover {
+            background: #15803d;
+        }
+        .achievement {
+            font-size: 1.5rem;
+            color: #16a34a;
+            text-align: center;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg class="logo" viewBox="0 0 400 100">
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
+                      style="font-size: 48px; font-weight: bold;">
+                    <tspan style="fill: black;">Kian</tspan>
+                    <tspan style="fill: #991b1b;">Falcon</tspan>
+                </text>
+            </svg>
+            <h1>Building a Greener Future: Word Search 🏢➡️🌿</h1>
+            <div class="instructions">
+                🎮 How to play: Click and drag your mouse over letters to find hidden words!
+                Words can be horizontal, vertical, or diagonal in any direction.
+            </div>
+            <p class="timer">Time: <span id="timer">00:00</span></p>
+            <p class="score">Score: <span id="score">0</span></p>
+            <p class="achievement" id="achievement"></p>
+        </div>
+
+        <div class="grid" id="grid"></div>
+            <h2>Found Words (<span id="found-count">0</span>)</h2>
+            <div class="found-words-grid" id="found-words-list"></div>
+        </div>
+
+        <div class="popup" id="popup">
+            <div class="popup-content">
+                <h2 id="popup-word"></h2>
+                <p><strong>Definition:</strong> <span id="popup-definition"></span></p>
+                <p><strong>Sustainability Impact:</strong> <span id="popup-impact"></span></p>
+                <p><strong>Industry Relevance:</strong> <span id="popup-industry"></span></p>
+                <button class="button" onclick="closePopup()">Done</button>
+            </div>
+        </div>
+
+        <div class="completion-popup" id="completion-popup">
+            <div class="achievement-title" id="completion-title"></div>
+            <p id="completion-message"></p>
+            <div class="eco-fact" id="eco-fact"></div>
+            <p id="completion-time"></p>
+            <div class="completion-buttons">
+                <button class="completion-button" onclick="window.location.reload()">Play Again</button>
+                <button class="completion-button" onclick="document.getElementById('completion-popup').classList.remove('show')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WORD_DICTIONARY = {
+            'carbon': {
+                definition: 'The element associated with emissions that contribute to climate change',
+                impact: 'Reducing carbon emissions is crucial for fighting climate change',
+                industry: 'Energy and Manufacturing'
+            },
+            'energy': {
+                definition: 'Power derived from physical or chemical resources',
+                impact: 'Transition to renewable energy reduces environmental impact',
+                industry: 'Energy Sector'
+            },
+            'waste': {
+                definition: 'Unwanted or unusable materials',
+                impact: 'Proper waste management reduces environmental pollution',
+                industry: 'Waste Management'
+            },
+            'recycle': {
+                definition: 'Converting waste materials into new products',
+                impact: 'Reduces landfill waste and conserves resources',
+                industry: 'Waste Management'
+            },
+            'solar': {
+                definition: 'Energy derived from the sun\'s radiation',
+                impact: 'Provides clean, renewable energy with zero emissions',
+                industry: 'Renewable Energy'
+            },
+            'renew': {
+                definition: 'Natural resources that can be naturally replenished',
+                impact: 'Provides sustainable energy solutions',
+                industry: 'Energy Sector'
+            },
+            'eco': {
+                definition: 'Relating to the environment and ecological concerns',
+                impact: 'Promotes environmental awareness and conservation',
+                industry: 'Multiple Industries'
+            }
+        };
+
+        const ACHIEVEMENT_LEVELS = [
+            { time: 60, title: "🏆 Eco Champion", message: "Lightning-fast sustainability expert!" },
+            { time: 120, title: "🌟 Green Guardian", message: "Great environmental awareness!" },
+            { time: 180, title: "🌱 Earth Defender", message: "Solid eco-warrior performance!" },
+            { time: 240, title: "🌍 Nature Novice", message: "Good start on your green journey!" }
+        ];
+
+        const ECO_FACTS = {
+            'Eco Champion': "Did you know? One bamboo plant can absorb up to 12 tons of CO2 per hectare annually, which is about 4 times more effective than a typical tree!",
+            'Green Guardian': "Fun fact: Using bamboo instead of traditional wood can save 25 trees per acre of bamboo planted. Plus, bamboo grows to full size in just 3-5 years!",
+            'Earth Defender': "Amazing fact: A single solar panel can prevent 178 pounds of CO2 from entering the atmosphere each year. That's equivalent to planting 10 trees!",
+            'Nature Novice': "Eco tip: Recycling one aluminum can saves enough energy to run a TV for 3 hours. Every small action counts!",
+            'Eco Explorer': "Green fact: One wind turbine can generate enough electricity to power 1,400 homes for an entire year!"
+        };
+
+        const gridWords = [
+            ['R', 'E', 'C', 'Y', 'C', 'L', 'E', 'W'],
+            ['E', 'C', 'O', 'E', 'L', 'G', 'N', 'A'],
+            ['N', 'S', 'O', 'L', 'A', 'R', 'N', 'S'],
+            ['E', 'R', 'W', 'A', 'S', 'T', 'E', 'T'],
+            ['W', 'B', 'E', 'N', 'E', 'R', 'G', 'Y'],
+            ['A', 'O', 'T', 'B', 'N', 'S', 'G', 'S'],
+            ['B', 'N', 'E', 'O', 'E', 'S', 'Y', 'H'],
+            ['C', 'A', 'R', 'B', 'O', 'N', 'X', 'L']
+        ];
+
+        let selecting = false;
+        let selectedCells = new Set();
+        let currentSelection = [];
+        let foundWords = new Set();
+        let score = 0;
+        let timerStarted = false;
+        let startTime;
+        let timerInterval;
+
+        function getAchievement(seconds) {
+            for (const level of ACHIEVEMENT_LEVELS) {
+                if (seconds <= level.time) {
+                    return level;
+                }
+            }
+            return { 
+                title: "🌱 Eco Explorer", 
+                message: "Keep practicing to improve your time!" 
+            };
+        }
+
+        function showCompletionPopup() {
+            const now = new Date();
+            const seconds = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            const achievement = getAchievement(seconds);
+            
+            const popup = document.getElementById('completion-popup');
+            const title = document.getElementById('completion-title');
+            const message = document.getElementById('completion-message');
+            const fact = document.getElementById('eco-fact');
+            const time = document.getElementById('completion-time');
+            
+            title.textContent = achievement.title;
+            message.textContent = achievement.message;
+            fact.textContent = ECO_FACTS[achievement.title.split(' ')[1]] || ECO_FACTS['Eco Explorer'];
+            time.textContent = `Completion Time: ${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            
+            popup.classList.add('show');
+        }
+
+        function startTimer() {
+            if (!timerStarted) {
+                timerStarted = true;
+                startTime = new Date();
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function initializeGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < gridWords.length; i++) {
+                for (let j = 0; j < gridWords[i].length; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = gridWords[i][j];
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    cell.addEventListener('mousedown', () => {
+                        startTimer();
+                        handleMouseDown(i, j);
+                    });
+                    cell.addEventListener('mouseenter', () => handleMouseEnter(i, j));
+                    cell.addEventListener('mouseup', handleMouseUp);
+                    
+                    grid.appendChild(cell);
+                }
+            }
+            
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function handleMouseDown(row, col) {
+            selecting = true;
+            selectedCells.clear();
+            currentSelection = [];
+            addToSelection(row, col);
+        }
+
+        function handleMouseEnter(row, col) {
+            if (selecting) {
+                addToSelection(row, col);
+            }
+        }
+
+        function addToSelection(row, col) {
+            const cellKey =  `${row}-${col}`;
+            if (!selectedCells.has(cellKey)) {
+                selectedCells.add(cellKey);
+                currentSelection.push({ row, col });
+                updateSelectedCells();
+            }
+        }
+
+        function handleMouseUp() {
+            if (selecting) {
+                const selectedWord = currentSelection
+                    .map(pos => gridWords[pos.row][pos.col])
+                    .join('')
+                    .toLowerCase();
+                
+                const reversedWord = selectedWord.split('').reverse().join('');
+                
+                if ((WORD_DICTIONARY[selectedWord] || WORD_DICTIONARY[reversedWord]) && 
+                    !foundWords.has(selectedWord) && !foundWords.has(reversedWord)) {
+                    const wordToAdd = WORD_DICTIONARY[selectedWord] ? selectedWord : reversedWord;
+                    foundWords.add(wordToAdd);
+                    updateFoundWords();
+                    markFoundWord();
+                    showPopup(wordToAdd);
+                    updateScore(wordToAdd.length);
+                }
+            }
+            selecting = false;
+            selectedCells.clear();
+            currentSelection = [];
+            updateSelectedCells();
+        }
+
+        function updateSelectedCells() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const cellKey = `${cell.dataset.row}-${cell.dataset.col}`;
+                cell.classList.remove('selected');
+                if (selectedCells.has(cellKey)) {
+                    cell.classList.add('selected');
+                }
+            });
+        }
+
+        function markFoundWord() {
+            currentSelection.forEach(pos => {
+                const cell = document.querySelector(
+                    `.cell[data-row="${pos.row}"][data-col="${pos.col}"]`
+                );
+                cell.classList.add('found');
+            });
+        }
+
+        function updateFoundWords() {
+            const foundWordsList = document.getElementById('found-words-list');
+            const foundCount = document.getElementById('found-count');
+            
+            foundWordsList.innerHTML = Array.from(foundWords)
+                .map(word => `<div class="found-word">${word.toUpperCase()}</div>`)
+                .join('');
+            
+            foundCount.textContent = foundWords.size;
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').textContent = score;
+        }
+
+        function showPopup(word) {
+            const popup = document.getElementById('popup');
+            const wordInfo = WORD_DICTIONARY[word];
+            
+            document.getElementById('popup-word').textContent = `🌱 Found: ${word.toUpperCase()}!`;
+            document.getElementById('popup-definition').textContent = wordInfo.definition;
+            document.getElementById('popup-impact').textContent = wordInfo.impact;
+            document.getElementById('popup-industry').textContent = wordInfo.industry;
+            
+            popup.classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popup').classList.remove('show');
+        }
+
+        // Initialize the game
+        function checkGameCompletion() {
+    if (foundWords.size === Object.keys(WORD_DICTIONARY).length) {
+        clearInterval(timerInterval); // Stop the timer
+        showCompletionPopup(); // Show completion message
+    }
+}
+
+// Modify handleMouseUp function to include checkGameCompletion()
+function handleMouseUp() {
+    if (selecting) {
+        const selectedWord = currentSelection
+            .map(pos => gridWords[pos.row][pos.col])
+            .join('')
+            .toLowerCase();
+        
+        const reversedWord = selectedWord.split('').reverse().join('');
+        
+        if ((WORD_DICTIONARY[selectedWord] || WORD_DICTIONARY[reversedWord]) && 
+            !foundWords.has(selectedWord) && !foundWords.has(reversedWord)) {
+            const wordToAdd = WORD_DICTIONARY[selectedWord] ? selectedWord : reversedWord;
+            foundWords.add(wordToAdd);
+            updateFoundWords();
+            markFoundWord();
+            showPopup(wordToAdd);
+            updateScore(wordToAdd.length);
+            checkGameCompletion(); // Check if game is complete
+        }
+    }
+    selecting = false;
+    selectedCells.clear();
+    currentSelection = [];
+    updateSelectedCells();
+}
+initializeGrid();
+    </script>
+</body>
+</html>
